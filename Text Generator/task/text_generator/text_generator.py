@@ -1,36 +1,52 @@
+import random
+
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.util import bigrams
 
-tokenizer = WhitespaceTokenizer()
-filename = input()
-f = open(filename, "r", encoding="utf-8")
 
-tokens = tokenizer.tokenize(f.read())
-bigrm = bigrams(tokens)
-bigram_tuple = tuple(bigrm)
+def open_file():
+    filename = input()
+    return open(filename, "r", encoding="utf-8")
 
-while True:
-    try:
-        user_input = input()
-        if user_input == 'exit':
-            break
-        print(f'Head: {user_input}')
-        dict_of_words = {}
-        for words in bigram_tuple:
-            if words[0] == user_input:
-                if words[1] in dict_of_words:
-                    dict_of_words[words[1]] += 1
-                else:
-                    dict_of_words[words[1]] = 1
-        if dict_of_words[user_input] == 0:
-            raise KeyError
-        for key, item in dict_of_words.items():
-            print(f'Tail: {key} Count: {item}')
-    except TypeError:
-        print('Type Error. Please input an integer.')
-    except IndexError:
-        print('Index Error. Please input an integer that is in the range of the corpus.')
-    except ValueError:
-        print('ValueError. Please input an integer')
-    except KeyError:
-        print('Key Error. The requested word is not in the model. Please input another word.')
+
+def create_bigrams(f):
+    tokenizer = WhitespaceTokenizer()
+    text = f.read()
+    tokens = tokenizer.tokenize(text)
+    bigrm = bigrams(tokens)
+    return tuple(bigrm)
+
+
+def count_tail_occurrences(bigram_tuple, word):
+    dict_of_words = {}
+    for words in bigram_tuple:
+        if words[0] == word:
+            if words[1] in dict_of_words:
+                dict_of_words[words[1]] += 1
+            else:
+                dict_of_words[words[1]] = 1
+    return dict_of_words
+
+
+def return_next_word(word):
+    dict_of_occurences = count_tail_occurrences(bigram_tuple, word)
+    return max(dict_of_occurences, key=dict_of_occurences.get)
+
+
+def generate_pseudo_sentence(bigram_tuple):
+    first_tuple = random.choice(bigram_tuple)
+    pseudo_sentence = first_tuple[0]
+    next_word = return_next_word(pseudo_sentence)
+    pseudo_sentence += f" {next_word}"
+
+    for _ in range(8):
+        next_word = return_next_word(next_word)
+        pseudo_sentence += f" {next_word}"
+    print(pseudo_sentence)
+
+
+f = open_file()
+bigram_tuple = create_bigrams(f)
+
+for _ in range(10):
+    generate_pseudo_sentence(bigram_tuple)
