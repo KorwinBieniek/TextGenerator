@@ -30,11 +30,11 @@ def count_tail_occurrences(bigram_tuple, word):
 
 def return_next_word(word):
     dict_of_occurences = count_tail_occurrences(bigram_tuple, word)
-    return max(dict_of_occurences, key=dict_of_occurences.get)
-
+    dict_of_occurences = dict(sorted(dict_of_occurences.items(), key=lambda item: item[1], reverse=True))
+    list_of_next_words = list(dict_of_occurences.keys())[:5]
+    return random.choice(list_of_next_words)
 
 def generate_pseudo_sentence(bigram_tuple):
-    first_tuple = ''
 
     first_tuple = random.choice(bigram_tuple)
     while True:
@@ -56,6 +56,5 @@ def generate_pseudo_sentence(bigram_tuple):
 
 f = open_file()
 bigram_tuple = create_bigrams(f)
-
 for i in range(10):
     generate_pseudo_sentence(bigram_tuple)
