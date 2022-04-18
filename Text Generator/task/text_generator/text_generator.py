@@ -34,12 +34,21 @@ def return_next_word(word):
 
 
 def generate_pseudo_sentence(bigram_tuple):
+    first_tuple = ''
+
     first_tuple = random.choice(bigram_tuple)
+    while True:
+        if first_tuple[0][0].isupper() and first_tuple[0][-1] not in '.!?':
+            break
+        else:
+            first_tuple = random.choice(bigram_tuple)
     pseudo_sentence = first_tuple[0]
     next_word = return_next_word(pseudo_sentence)
     pseudo_sentence += f" {next_word}"
-
-    for _ in range(8):
+    while len(pseudo_sentence.split()) < 5:
+        next_word = return_next_word(next_word)
+        pseudo_sentence += f" {next_word}"
+    while next_word[-1] not in '.?!':
         next_word = return_next_word(next_word)
         pseudo_sentence += f" {next_word}"
     print(pseudo_sentence)
@@ -48,5 +57,5 @@ def generate_pseudo_sentence(bigram_tuple):
 f = open_file()
 bigram_tuple = create_bigrams(f)
 
-for _ in range(10):
+for i in range(10):
     generate_pseudo_sentence(bigram_tuple)
